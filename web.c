@@ -11,10 +11,10 @@ typedef struct Node {
     struct Node *next;
 } Node;
 
-Node *head = NULL;     // First page (optional)
-Node *current = NULL;  // Current page pointer
+Node *head = NULL;
+Node *current = NULL;
 
-// Function to delete all nodes after current (clear forward history)
+// Delete all nodes after "current" (clear forward history)
 void clearForwardHistory() {
     if (current == NULL) return;
 
@@ -26,7 +26,6 @@ void clearForwardHistory() {
         free(temp);
         temp = nextNode;
     }
-
     current->next = NULL;
 }
 
@@ -42,14 +41,11 @@ void visitPage(char url[]) {
     newNode->next = NULL;
 
     if (current == NULL) {
-        // No pages yet
         newNode->prev = NULL;
         head = newNode;
         current = newNode;
     } else {
-        // Remove forward history
         clearForwardHistory();
-
         newNode->prev = current;
         current->next = newNode;
         current = newNode;
@@ -58,40 +54,40 @@ void visitPage(char url[]) {
     printf("Visited: %s\n", current->url);
 }
 
-// Go back to previous page
+// Go back one page
 void goBack() {
     if (current == NULL) {
-        printf("No pages visited yet.\n");
+        printf("No pages visited yet!\n");
     } else if (current->prev == NULL) {
-        printf("No previous page. Can't go back.\n");
+        printf("No Previous pages!\n");
     } else {
         current = current->prev;
-        printf("Current page (after Back): %s\n", current->url);
+        printf("Went Back : %s\n", current->url);
     }
 }
 
-// Go forward to next page
+// Go forward one page
 void goForward() {
     if (current == NULL) {
-        printf("No pages visited yet.\n");
+        printf("No pages visited yet!\n");
     } else if (current->next == NULL) {
-        printf("No next page. Can't go forward.\n");
+        printf("No Forward pages!\n");
     } else {
         current = current->next;
-        printf("Current page (after Forward): %s\n", current->url);
+        printf("Went Forward : %s\n", current->url);
     }
 }
 
-// Display current page
+// Show current page
 void showCurrentPage() {
     if (current == NULL) {
-        printf("No page is currently open.\n");
+        printf("No pages visited yet!\n");
     } else {
-        printf("Current page: %s\n", current->url);
+        printf("Current pages : %s\n", current->url);
     }
 }
 
-// Free all nodes before exit
+// Free all nodes
 void freeAll() {
     Node *temp = head;
     Node *nextNode;
@@ -108,19 +104,19 @@ int main() {
     char url[MAX_URL];
 
     while (1) {
-        printf("\n--- Simple Web Browser ---\n");
-        printf("1. Visit new page\n");
-        printf("2. Back\n");
-        printf("3. Forward\n");
+        printf("\n\t\tBrowser Navigation\n");
+        printf("1. Visit page\n");
+        printf("2. Go Back\n");
+        printf("3. Go Forward\n");
         printf("4. Show current page\n");
         printf("5. Exit\n");
-        printf("Enter your choice: ");
+        printf("Enter the choice :");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter URL (no spaces): ");
-                scanf("%s", url);  // simple for exam; real code use fgets
+                printf("Enter the URL:");
+                scanf("%s", url);    // for exam: no spaces
                 visitPage(url);
                 break;
 
@@ -137,12 +133,12 @@ int main() {
                 break;
 
             case 5:
+                printf("Exiting the program!\n");
                 freeAll();
-                printf("Exiting...\n");
                 return 0;
 
             default:
-                printf("Invalid choice. Try again.\n");
+                printf("Invalid choice!\n");
         }
     }
 
