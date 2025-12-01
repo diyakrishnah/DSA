@@ -2,145 +2,86 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_URL 100
-
-// Node of doubly linked list
 typedef struct Node {
-    char url[MAX_URL];
-    struct Node *prev;
-    struct Node *next;
+    char url[100];
+    struct Node *prev, *next;
 } Node;
 
-Node *head = NULL;
 Node *current = NULL;
 
-// Delete all nodes after "current" (clear forward history)
-void clearForwardHistory() {
-    if (current == NULL) return;
-
-    Node *temp = current->next;
-    Node *nextNode;
-
-    while (temp != NULL) {
-        nextNode = temp->next;
-        free(temp);
-        temp = nextNode;
-    }
-    current->next = NULL;
-}
-
-// Visit a new page
-void visitPage(char url[]) {
-    Node *newNode = (Node *)malloc(sizeof(Node));
-    if (newNode == NULL) {
-        printf("Memory allocation failed!\n");
-        return;
-    }
-
-    strcpy(newNode->url, url);
+// Visit new page
+void visitPage(char *url) {
+    Node newNode = (Node)malloc(sizeof(Node));  // library function: malloc()
+    strcpy(newNode->url, url);                   // library function: strcpy()
     newNode->next = NULL;
 
-    if (current == NULL) {
-        newNode->prev = NULL;
-        head = newNode;
-        current = newNode;
-    } else {
-        clearForwardHistory();
+    if(current != NULL) {
+        current->next = NULL; // delete forward history
         newNode->prev = current;
         current->next = newNode;
-        current = newNode;
+    } else {
+        newNode->prev = NULL;
     }
-
+    current = newNode;
     printf("Visited: %s\n", current->url);
 }
 
-// Go back one page
+// Go Back
 void goBack() {
-    if (current == NULL) {
-        printf("No pages visited yet!\n");
-    } else if (current->prev == NULL) {
-        printf("No Previous pages!\n");
+    if(current == NULL || current->prev == NULL) {
+        printf("No Previous Pages!\n");
     } else {
         current = current->prev;
-        printf("Went Back : %s\n", current->url);
+        printf("Went Back to: %s\n", current->url);
     }
 }
 
-// Go forward one page
+// Go Forward
 void goForward() {
-    if (current == NULL) {
-        printf("No pages visited yet!\n");
-    } else if (current->next == NULL) {
-        printf("No Forward pages!\n");
+    if(current == NULL || current->next == NULL) {
+        printf("No Forward Pages!\n");
     } else {
         current = current->next;
-        printf("Went Forward : %s\n", current->url);
+        printf("Went Forward to: %s\n", current->url);
     }
 }
 
 // Show current page
-void showCurrentPage() {
-    if (current == NULL) {
-        printf("No pages visited yet!\n");
-    } else {
-        printf("Current pages : %s\n", current->url);
-    }
-}
-
-// Free all nodes
-void freeAll() {
-    Node *temp = head;
-    Node *nextNode;
-
-    while (temp != NULL) {
-        nextNode = temp->next;
-        free(temp);
-        temp = nextNode;
-    }
+void showCurrent() {
+    if(current == NULL)
+        printf("No page opened!\n");
+    else
+        printf("Current Page: %s\n", current->url);
 }
 
 int main() {
     int choice;
-    char url[MAX_URL];
+    char url[100];
 
-    while (1) {
-        printf("\n\t\tBrowser Navigation\n");
-        printf("1. Visit page\n");
-        printf("2. Go Back\n");
-        printf("3. Go Forward\n");
-        printf("4. Show current page\n");
-        printf("5. Exit\n");
-        printf("Enter the choice :");
-        scanf("%d", &choice);
+    while(1){
+        printf("\n=== Browser Navigation ===\n");
+        printf("1. Visit Page\n2. Go Back\n3. Go Forward\n4. Show Current Page\n5. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice); getchar();
 
-        switch (choice) {
+        switch(choice){
             case 1:
-                printf("Enter the URL:");
-                scanf("%s", url);    // for exam: no spaces
+                printf("Enter URL: ");
+                fgets(url, sizeof(url), stdin);
+                url[strcspn(url, "\n")] = 0;  // remove newline
                 visitPage(url);
                 break;
 
-            case 2:
-                goBack();
-                break;
-
-            case 3:
-                goForward();
-                break;
-
-            case 4:
-                showCurrentPage();
-                break;
+            case 2: goBack(); break;
+            case 3: goForward(); break;
+            case 4: showCurrent(); break;
 
             case 5:
-                printf("Exiting the program!\n");
-                freeAll();
+                printf("Exiting...\n");
                 return 0;
 
             default:
-                printf("Invalid choice!\n");
+                printf("Invalid Choice!\n");
         }
     }
-
-    return 0;
 }
